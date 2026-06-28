@@ -62,6 +62,10 @@ html, body, [data-testid="stApp"] {
 [data-testid="stDecoration"],
 [data-testid="stStatusWidget"] { visibility: hidden !important; height: 0 !important; }
 
+/* ── Hide sidebar toggle arrow ──────────────────────────── */
+[data-testid="stSidebarCollapsedControl"],
+[data-testid="collapsedControl"] { display: none !important; }
+
 /* ── Hide default Streamlit multipage sidebar nav ───────── */
 [data-testid="stSidebarNav"] { display: none !important; }
 
@@ -280,13 +284,13 @@ hr { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
 """
 
 
-def apply_theme() -> None:
+def apply_theme(sidebar_state: str = "expanded") -> None:
     """Inject the Flora OS design system. Call at the top of every page."""
     st.set_page_config(
         page_title="Flora OS",
         page_icon="🌿",
         layout="wide",
-        initial_sidebar_state="expanded",
+        initial_sidebar_state=sidebar_state,
     )
     st.markdown(FLORA_CSS, unsafe_allow_html=True)
 

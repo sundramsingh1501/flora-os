@@ -16,13 +16,8 @@ from app.utils.logger import get_logger
 
 logger = get_logger("pages.onboarding")
 
-apply_theme()
+apply_theme(sidebar_state="collapsed")
 user = require_auth()
-
-st.markdown(
-    "<style>[data-testid='stSidebar']{display:none!important;}</style>",
-    unsafe_allow_html=True,
-)
 
 TOTAL_STEPS = 5
 

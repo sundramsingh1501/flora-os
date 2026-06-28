@@ -17,7 +17,7 @@ from datetime import datetime
 
 logger = get_logger("pages.login")
 
-apply_theme()
+apply_theme(sidebar_state="collapsed")
 
 # ── Redirect if already logged in ────────────────────────────────────────────
 user = get_current_user()
