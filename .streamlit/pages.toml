@@ -1,0 +1,39 @@
+[[pages]]
+path = "app/pages/login.py"
+name = "Login"
+icon = "🔐"
+
+[[pages]]
+path = "app/pages/onboarding.py"
+name = "Onboarding"
+icon = "🌿"
+
+[[pages]]
+path = "app/pages/dashboard.py"
+name = "Dashboard"
+icon = "🏠"
+
+[[pages]]
+path = "app/pages/morning_brief.py"
+name = "Morning Brief"
+icon = "📰"
+
+[[pages]]
+path = "app/pages/email_hub.py"
+name = "Email Hub"
+icon = "✉️"
+
+[[pages]]
+path = "app/pages/job_board.py"
+name = "Job Board"
+icon = "💼"
+
+[[pages]]
+path = "app/pages/market.py"
+name = "Markets"
+icon = "📈"
+
+[[pages]]
+path = "app/pages/settings.py"
+name = "Settings"
+icon = "⚙️"
