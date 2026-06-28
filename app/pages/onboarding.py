@@ -323,6 +323,13 @@ elif step == 5:
     )
 
     # Summary card
+    _cat_pills = "".join(
+        f'<span style="background:rgba(124,106,247,0.15);color:#7c6af7;border-radius:20px;'
+        f'padding:3px 12px;font-size:0.8rem;font-weight:600;">{c}</span>'
+        for c in cats[:6]
+    )
+    _default_msg = "Here's what happened in the world yesterday."
+    _preview_msg = morning_msg or _default_msg
     st.markdown(
         f"""
         <div style="background:var(--bg-glass);border:1px solid var(--border);
@@ -330,11 +337,11 @@ elif step == 5:
           <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;
                       color:var(--text-muted);margin-bottom:12px;">Your Brief Summary</div>
           <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
-            {"".join(f'<span style="background:rgba(124,106,247,0.15);color:#7c6af7;border-radius:20px;padding:3px 12px;font-size:0.8rem;font-weight:600;">{c}</span>' for c in cats[:6])}
+            {_cat_pills}
           </div>
           <div style="font-size:0.88rem;color:var(--text-secondary);font-style:italic;line-height:1.6;
                       border-left:3px solid var(--accent-purple);padding-left:12px;">
-            "{morning_msg or 'Here\'s what happened in the world yesterday.'}"
+            "{_preview_msg}"
           </div>
         </div>
         """,

@@ -231,7 +231,7 @@ with tabs[4]:
         st.markdown(
             f'<div style="background:var(--bg-glass);border:1px solid var(--border);border-radius:var(--radius-md);'
             f'padding:1rem 1.25rem;margin-bottom:1.5rem;font-size:0.875rem;color:var(--text-secondary);line-height:1.6;">'
-            f'&#129302; <strong>Flora\'s Market Briefing:</strong> {mkt_summary}</div>',
+            f'&#129302; <strong>Flora&#39;s Market Briefing:</strong> {mkt_summary}</div>',
             unsafe_allow_html=True,
         )
 
