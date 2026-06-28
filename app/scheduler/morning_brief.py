@@ -92,6 +92,7 @@ def _send_emails_for_due_users() -> None:
                     p = db2.query(UserPreferences).filter_by(user_id=user.id).first()
                     if p:
                         p.last_email_sent_date = today_str
+                        db2.flush()
 
         except Exception as exc:
             logger.error("Email send failed for user_id=%s: %s", user.id, exc)

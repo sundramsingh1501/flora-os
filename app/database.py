@@ -10,9 +10,16 @@ from typing import Generator
 from sqlalchemy import create_engine, event
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
+import os
 from app.config import settings
 
 logger = logging.getLogger(__name__)
+
+# Ensure parent directory exists (important for /data/flora_os.db on HF Spaces)
+if settings.database_url.startswith("sqlite:///"):
+    _db_path = settings.database_url.replace("sqlite:///", "").replace("sqlite://", "")
+    if _db_path and not _db_path.startswith(":"):
+        os.makedirs(os.path.dirname(os.path.abspath(_db_path)), exist_ok=True)
 
 # SQLite needs WAL mode for concurrent reads
 _connect_args = {}
