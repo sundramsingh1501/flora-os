@@ -4,9 +4,10 @@ emoji: 🌿
 colorFrom: purple
 colorTo: blue
 sdk: streamlit
-sdk_version: 1.52.1
+sdk_version: 1.41.0
 app_file: app/main.py
 pinned: false
+python_version: 3.11
 license: mit
 ---
 
