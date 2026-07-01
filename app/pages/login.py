@@ -36,15 +36,6 @@ if "google_redirect_url" in st.session_state:
 
 # Google OAuth callback is handled in main.py before this page loads.
 
-# ── Instant overlay to prevent sidebar flash on page transition ───────────────
-st.markdown(
-    """
-    <div id="_flora_cover" style="position:fixed;inset:0;background:#09090f;z-index:999999;pointer-events:none;"></div>
-    <script>setTimeout(function(){var e=document.getElementById('_flora_cover');if(e)e.style.display='none';},350);</script>
-    """,
-    unsafe_allow_html=True,
-)
-
 # ── Styles ────────────────────────────────────────────────────────────────────
 st.markdown(
     """
