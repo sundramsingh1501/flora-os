@@ -5,6 +5,14 @@ Run with: streamlit run app/main.py
 
 import streamlit as st
 
+# set_page_config MUST be the very first Streamlit call
+st.set_page_config(
+    page_title="Flora OS",
+    page_icon="🌿",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
+
 from app.config import settings
 from app.database import init_db
 from app.utils.logger import setup_logging, get_logger
@@ -162,9 +170,9 @@ if _handle_gmail_connect_callback():
 
 # ── Route to login or dashboard ───────────────────────────────────────────────
 from app.auth.session import get_current_user
-from app.ui.theme import apply_theme
+from app.ui.theme import apply_theme_no_config
 
-apply_theme()
+apply_theme_no_config()
 
 user = get_current_user()
 if user:

@@ -23,7 +23,6 @@ def _send_emails_for_due_users() -> None:
     from app.database import get_db
     from app.models import User, UserPreferences
     from app.services.email_sender import send_morning_brief
-    from app.services.news_service import fetch_top_stories
     from app.services.weather_service import get_weather
     from app.services.market_service import get_market_data
 
