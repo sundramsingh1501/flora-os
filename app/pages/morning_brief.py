@@ -43,7 +43,7 @@ def _get_brief(user_id: int, date: str):
 
     t = threading.Thread(target=_run, daemon=True)
     t.start()
-    t.join(timeout=90)
+    t.join(timeout=150)
     if t.is_alive():
         return None  # timed out
     item = q.get_nowait() if not q.empty() else ("err", "no result")

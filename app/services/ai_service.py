@@ -27,13 +27,13 @@ def _get_model() -> genai.GenerativeModel:
             model_name=_MODEL_NAME,
             generation_config=genai.GenerationConfig(
                 temperature=0.3,
-                max_output_tokens=8192,
+                max_output_tokens=4096,
             ),
         )
     return _model
 
 
-def generate(prompt: str, temperature: float = 0.3, retries: int = 3) -> str:
+def generate(prompt: str, temperature: float = 0.3, retries: int = 2) -> str:
     """Send a prompt to Gemini and return the text response."""
     model = _get_model()
     for attempt in range(retries):
@@ -42,14 +42,15 @@ def generate(prompt: str, temperature: float = 0.3, retries: int = 3) -> str:
                 prompt,
                 generation_config=genai.GenerationConfig(
                     temperature=temperature,
-                    max_output_tokens=8192,
+                    max_output_tokens=4096,
+                    thinking_config={"thinking_budget": 0},
                 ),
             )
             return response.text.strip()
         except Exception as exc:
             logger.warning("Gemini attempt %s/%s failed: %s", attempt + 1, retries, exc)
             if attempt < retries - 1:
-                time.sleep(2 ** attempt)
+                time.sleep(3)
     logger.error("Gemini generation failed after %s retries.", retries)
     return ""
 
