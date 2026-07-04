@@ -25,7 +25,14 @@ if user:
     st.switch_page("pages/dashboard.py")
     st.stop()
 
-# Google OAuth callback is handled in main.py before this page loads.
+# ── Redirect for Google OAuth (set by button click, executed on rerun) ───────
+if "google_redirect_url" in st.session_state:
+    url = st.session_state.pop("google_redirect_url")
+    st.markdown(
+        f'<meta http-equiv="refresh" content="0; url={url}">',
+        unsafe_allow_html=True,
+    )
+    st.stop()
 
 # Google OAuth callback is handled in main.py before this page loads.
 
@@ -105,17 +112,65 @@ with col_b:
 
 st.markdown("<div style='height:16px;'></div>", unsafe_allow_html=True)
 
-def _google_button(label: str, google_url: str, done_key: str) -> None:
-    """Opens Google OAuth in a new tab. After user signs in, they click Done to restore session."""
-    st.link_button(f"🔵  {label}", google_url, use_container_width=True)
+G_SVG = (
+    '<svg width="18" height="18" viewBox="0 0 48 48" style="display:inline-block;vertical-align:middle;">'
+    '<path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0'
+    ' 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>'
+    '<path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26'
+    ' 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>'
+    '<path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19'
+    'C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>'
+    '<path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3'
+    '-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>'
+    '</svg>'
+)
+
+st.markdown(
+    """
+    <style>
+    /* White icon row — visible, not clickable */
+    .g-icon-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        font-weight: 600;
+        font-size: 0.93rem;
+        color: #3c4043;
+        background: #ffffff;
+        border: 1px solid #dadce0;
+        border-radius: 8px;
+        padding: 11px 16px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.10);
+        user-select: none;
+        pointer-events: none;
+    }
+    /* Pull the real button UP to sit on top of the icon row, fully transparent */
+    .element-container:has(.g-icon-row) + .element-container {
+        margin-top: -50px !important;
+    }
+    .element-container:has(.g-icon-row) + .element-container div[data-testid="stButton"] > button {
+        opacity: 0.01 !important;
+        height: 50px !important;
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+
+def _google_button(label: str, btn_key: str) -> bool:
+    """Renders a white Google-branded button. The visual is HTML; the click is Streamlit."""
+    # Visible white pill with Google G icon
     st.markdown(
-        "<div style='font-size:0.78rem;color:#888;text-align:center;margin-top:4px;'>"
-        "A new tab will open → sign in → come back here and click below"
-        "</div>",
+        f'<div class="g-icon-row">{G_SVG}{label}</div>',
         unsafe_allow_html=True,
     )
-    if st.button("✅  I've signed in — continue", key=done_key, use_container_width=True):
-        st.rerun()
+    # Transparent Streamlit button overlaid on top to capture clicks
+    return st.button(label, use_container_width=True, key=btn_key)
 
 
 # ═══════════════════════════════════════════════════════════════════
@@ -125,7 +180,11 @@ if st.session_state.login_tab == "signin":
 
     state = "google:" + secrets.token_urlsafe(16)
     google_url = google_auth_url(state)
-    _google_button("Continue with Google", google_url, "google_done_signin")
+
+    if _google_button("Continue with Google", "g_signin"):
+        st.session_state["oauth_state"] = state
+        st.session_state["google_redirect_url"] = google_url
+        st.rerun()
 
     labeled_divider("or sign in with email")
 
@@ -155,7 +214,11 @@ else:
 
     state = "google:" + secrets.token_urlsafe(16)
     google_url = google_auth_url(state)
-    _google_button("Sign up with Google", google_url, "google_done_register")
+
+    if _google_button("Sign up with Google", "g_register"):
+        st.session_state["oauth_state"] = state
+        st.session_state["google_redirect_url"] = google_url
+        st.rerun()
 
     labeled_divider("or create with email")
 
