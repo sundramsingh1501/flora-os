@@ -183,7 +183,6 @@ else:
     state = "google:" + secrets.token_urlsafe(16)
     google_url = google_auth_url(state)
     _google_button("Sign up with Google", google_url)
-        st.rerun()
 
     labeled_divider("or create with email")
 
