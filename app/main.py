@@ -74,14 +74,23 @@ def _handle_google_login_callback():
         save_oauth_token(db, u.id, "google", access_token, refresh_token,
                          expires_at, scope=token_data.get("scope"))
 
-    login(u)
-    st.session_state.pop("oauth_state", None)
-    toast_success(f"Welcome, {u.name.split()[0]}!")
+    from app.auth.token_manager import create_session_token
+    from app.database import get_db as _get_db2
+    with _get_db2() as _db2:
+        _token = create_session_token(_db2, user_id=u.id)
 
-    if not u.is_onboarded:
-        st.switch_page("pages/onboarding.py")
-    else:
-        st.switch_page("pages/dashboard.py")
+    st.session_state.pop("oauth_state", None)
+
+    # Redirect back into the HF Spaces wrapper with the session token in the URL.
+    # get_current_user() picks up _ft and restores the session — no localStorage needed.
+    _base = settings.app_base_url.rstrip("/")
+    _page = "onboarding" if not u.is_onboarded else "dashboard"
+    _dest = f"{_base}/?_ft={_token}&_ns={_page}"
+    st.components.v1.html(
+        f"<script>window.top.location.href = '{_dest}';</script>",
+        height=0,
+    )
+    st.stop()
     return True
 
 
@@ -176,6 +185,11 @@ apply_theme_no_config()
 
 user = get_current_user()
 if user:
-    st.switch_page("pages/dashboard.py")
+    _ns = st.query_params.get("_ns", "dashboard")
+    st.query_params.clear()
+    if _ns == "onboarding":
+        st.switch_page("pages/onboarding.py")
+    else:
+        st.switch_page("pages/dashboard.py")
 else:
     st.switch_page("pages/login.py")
