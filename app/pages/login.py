@@ -25,15 +25,7 @@ if user:
     st.switch_page("pages/dashboard.py")
     st.stop()
 
-# ── Redirect for Google OAuth (set by button click, executed on rerun) ───────
-if "google_redirect_url" in st.session_state:
-    url = st.session_state.pop("google_redirect_url")
-    # Use window.top to break out of HF Spaces iframe — meta refresh stays inside iframe
-    st.components.v1.html(
-        f"<script>window.top.location.href = '{url}';</script>",
-        height=0,
-    )
-    st.stop()
+# Google OAuth callback is handled in main.py before this page loads.
 
 # Google OAuth callback is handled in main.py before this page loads.
 
@@ -113,8 +105,8 @@ with col_b:
 
 st.markdown("<div style='height:16px;'></div>", unsafe_allow_html=True)
 
-G_SVG = (
-    '<svg width="18" height="18" viewBox="0 0 48 48" style="display:inline-block;vertical-align:middle;">'
+_G_SVG = (
+    '<svg width="18" height="18" viewBox="0 0 48 48" style="display:inline-block;vertical-align:middle;margin-right:8px;">'
     '<path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0'
     ' 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>'
     '<path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26'
@@ -126,52 +118,31 @@ G_SVG = (
     '</svg>'
 )
 
-st.markdown(
-    """
-    <style>
-    /* White icon row — visible, not clickable */
-    .g-icon-row {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 9px;
-        font-weight: 600;
-        font-size: 0.93rem;
-        color: #3c4043;
-        background: #ffffff;
-        border: 1px solid #dadce0;
-        border-radius: 8px;
-        padding: 11px 16px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.10);
-        user-select: none;
-        pointer-events: none;
-    }
-    /* Pull the real button UP to sit on top of the icon row, fully transparent */
-    .element-container:has(.g-icon-row) + .element-container {
-        margin-top: -50px !important;
-    }
-    .element-container:has(.g-icon-row) + .element-container div[data-testid="stButton"] > button {
-        opacity: 0.01 !important;
-        height: 50px !important;
-        background: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
 
-
-def _google_button(label: str, btn_key: str) -> bool:
-    """Renders a white Google-branded button. The visual is HTML; the click is Streamlit."""
-    # Visible white pill with Google G icon
-    st.markdown(
-        f'<div class="g-icon-row">{G_SVG}{label}</div>',
-        unsafe_allow_html=True,
+def _google_button(label: str, google_url: str) -> None:
+    """Renders a Google-branded anchor link with target='_top' inside a component iframe.
+    This breaks out of the HF Spaces iframe on user click — the only reliable method."""
+    st.components.v1.html(
+        f"""
+        <style>
+          body {{ margin:0; padding:0; background:transparent; }}
+          a.gbtn {{
+            display:flex; align-items:center; justify-content:center;
+            font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+            font-weight:600; font-size:0.93rem; color:#3c4043;
+            background:#ffffff; border:1px solid #dadce0; border-radius:8px;
+            padding:11px 16px; box-shadow:0 1px 3px rgba(0,0,0,.10);
+            text-decoration:none; width:100%; box-sizing:border-box;
+            transition:box-shadow .15s;
+          }}
+          a.gbtn:hover {{ box-shadow:0 2px 6px rgba(0,0,0,.18); }}
+        </style>
+        <a class="gbtn" href="{google_url}" target="_top">
+          {_G_SVG}{label}
+        </a>
+        """,
+        height=52,
     )
-    # Transparent Streamlit button overlaid on top to capture clicks
-    return st.button(label, use_container_width=True, key=btn_key)
 
 
 # ═══════════════════════════════════════════════════════════════════
@@ -181,11 +152,7 @@ if st.session_state.login_tab == "signin":
 
     state = "google:" + secrets.token_urlsafe(16)
     google_url = google_auth_url(state)
-
-    if _google_button("Continue with Google", "g_signin"):
-        st.session_state["oauth_state"] = state
-        st.session_state["google_redirect_url"] = google_url
-        st.rerun()
+    _google_button("Continue with Google", google_url)
 
     labeled_divider("or sign in with email")
 
@@ -215,10 +182,7 @@ else:
 
     state = "google:" + secrets.token_urlsafe(16)
     google_url = google_auth_url(state)
-
-    if _google_button("Sign up with Google", "g_register"):
-        st.session_state["oauth_state"] = state
-        st.session_state["google_redirect_url"] = google_url
+    _google_button("Sign up with Google", google_url)
         st.rerun()
 
     labeled_divider("or create with email")
