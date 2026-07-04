@@ -7,7 +7,7 @@ import streamlit as st
 
 from app.auth.session import require_auth, get_user_preferences
 from app.auth.token_manager import save_oauth_token
-from app.auth.google_oauth import get_authorization_url as google_auth_url, get_token_expiry
+from app.auth.google_oauth import get_gmail_authorization_url as google_auth_url, get_token_expiry
 from app.database import get_db
 from app.models import GmailConnection, UserPreferences, User
 from app.ui.theme import apply_theme

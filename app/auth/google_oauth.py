@@ -16,8 +16,15 @@ from app.utils.logger import get_logger
 
 logger = get_logger("auth.google")
 
-# We request Gmail read scope at login so users don't need a second OAuth round.
+# Login scopes — basic profile only (no sensitive scopes to avoid 403)
 _SCOPES = [
+    "openid",
+    "https://www.googleapis.com/auth/userinfo.email",
+    "https://www.googleapis.com/auth/userinfo.profile",
+]
+
+# Gmail scopes — requested separately from Settings page when user connects Gmail
+_GMAIL_SCOPES = [
     "openid",
     "https://www.googleapis.com/auth/userinfo.email",
     "https://www.googleapis.com/auth/userinfo.profile",
@@ -30,14 +37,28 @@ _USERINFO_URL = "https://www.googleapis.com/oauth2/v3/userinfo"
 
 
 def get_authorization_url(state: str) -> str:
-    """Build the Google OAuth2 authorization URL."""
+    """Build the Google OAuth2 authorization URL (login only — no Gmail scope)."""
     params = {
         "client_id": settings.google_client_id,
         "redirect_uri": settings.google_redirect_uri,
         "response_type": "code",
         "scope": " ".join(_SCOPES),
-        "access_type": "offline",   # get refresh token
-        "prompt": "consent",         # always get refresh token even if re-authorizing
+        "access_type": "offline",
+        "prompt": "consent",
+        "state": state,
+    }
+    return f"{_AUTH_URL}?{urlencode(params)}"
+
+
+def get_gmail_authorization_url(state: str) -> str:
+    """Build the OAuth2 URL requesting Gmail read scope (used from Settings page)."""
+    params = {
+        "client_id": settings.google_client_id,
+        "redirect_uri": settings.google_redirect_uri,
+        "response_type": "code",
+        "scope": " ".join(_GMAIL_SCOPES),
+        "access_type": "offline",
+        "prompt": "consent",
         "state": state,
     }
     return f"{_AUTH_URL}?{urlencode(params)}"
