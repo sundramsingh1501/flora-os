@@ -28,9 +28,10 @@ if user:
 # ── Redirect for Google OAuth (set by button click, executed on rerun) ───────
 if "google_redirect_url" in st.session_state:
     url = st.session_state.pop("google_redirect_url")
-    st.markdown(
-        f'<meta http-equiv="refresh" content="0; url={url}">',
-        unsafe_allow_html=True,
+    # Use window.top to break out of HF Spaces iframe — meta refresh stays inside iframe
+    st.components.v1.html(
+        f"<script>window.top.location.href = '{url}';</script>",
+        height=0,
     )
     st.stop()
 

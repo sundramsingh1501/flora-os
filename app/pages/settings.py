@@ -139,7 +139,7 @@ with tab_gmail:
                     f"redirect_uri={app_settings.google_redirect_uri}",
                     f"redirect_uri={redirect}"
                 )
-                st.markdown(f'<meta http-equiv="refresh" content="0; url={url}">', unsafe_allow_html=True)
+                st.components.v1.html(f"<script>window.top.location.href = '{url}';</script>", height=0)
         with col2:
             if st.button("🗑️ Disconnect Gmail", use_container_width=True):
                 with get_db() as db:
@@ -169,7 +169,7 @@ with tab_gmail:
                 state = f"gmail:{user.id}:{secrets.token_urlsafe(16)}"
                 st.session_state["gmail_oauth_state"] = state
                 url = google_auth_url(state)
-                st.markdown(f'<meta http-equiv="refresh" content="0; url={url}">', unsafe_allow_html=True)
+                st.components.v1.html(f"<script>window.top.location.href = '{url}';</script>", height=0)
 
     st.markdown(
         """
