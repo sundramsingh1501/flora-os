@@ -24,7 +24,7 @@ def _send_emails_for_due_users() -> None:
     from app.models import User, UserPreferences
     from app.services.email_sender import send_morning_brief
     from app.services.weather_service import get_weather
-    from app.services.market_service import get_market_data
+    from app.services.market_service import get_market_summary
 
     now_utc = datetime.now(timezone.utc)
     today_str = now_utc.strftime("%Y-%m-%d")
@@ -169,10 +169,10 @@ def _get_weather_safe(prefs) -> dict | None:
 
 def _get_market_safe(prefs) -> dict | None:
     try:
-        from app.services.market_service import get_market_data
+        from app.services.market_service import get_market_summary
         stocks = list(prefs.stock_watchlist or ["AAPL", "GOOGL", "MSFT"])
         cryptos = list(prefs.crypto_watchlist or ["bitcoin"])
-        return get_market_data(tickers=stocks, crypto_ids=cryptos)
+        return get_market_summary(stocks=stocks, cryptos=cryptos)
     except Exception:
         return None
 
