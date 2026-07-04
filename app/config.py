@@ -33,6 +33,11 @@ class Settings(BaseSettings):
     google_client_secret: str = ""
     google_redirect_uri: str = "http://localhost:8501"
 
+    @property
+    def google_redirect_uri_clean(self) -> str:
+        """Always strip trailing slash to ensure exact match with Google Cloud Console."""
+        return self.google_redirect_uri.rstrip("/")
+
     # GitHub OAuth
     github_client_id: str = ""
     github_client_secret: str = ""

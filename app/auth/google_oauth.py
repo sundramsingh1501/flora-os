@@ -40,7 +40,7 @@ def get_authorization_url(state: str) -> str:
     """Build the Google OAuth2 authorization URL (login only — no Gmail scope)."""
     params = {
         "client_id": settings.google_client_id,
-        "redirect_uri": settings.google_redirect_uri,
+        "redirect_uri": settings.google_redirect_uri_clean,
         "response_type": "code",
         "scope": " ".join(_SCOPES),
         "access_type": "offline",
@@ -54,7 +54,7 @@ def get_gmail_authorization_url(state: str) -> str:
     """Build the OAuth2 URL requesting Gmail read scope (used from Settings page)."""
     params = {
         "client_id": settings.google_client_id,
-        "redirect_uri": settings.google_redirect_uri,
+        "redirect_uri": settings.google_redirect_uri_clean,
         "response_type": "code",
         "scope": " ".join(_GMAIL_SCOPES),
         "access_type": "offline",
@@ -72,7 +72,7 @@ def exchange_code(code: str) -> Optional[dict]:
             data={
                 "client_id": settings.google_client_id,
                 "client_secret": settings.google_client_secret,
-                "redirect_uri": settings.google_redirect_uri,
+                "redirect_uri": settings.google_redirect_uri_clean,
                 "code": code,
                 "grant_type": "authorization_code",
             },
