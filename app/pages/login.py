@@ -120,28 +120,23 @@ _G_SVG = (
 
 
 def _google_button(label: str, google_url: str) -> None:
-    """Renders a Google-branded anchor link with target='_top' inside a component iframe.
-    This breaks out of the HF Spaces iframe on user click — the only reliable method."""
-    st.components.v1.html(
+    """Renders a Google-branded anchor tag via st.markdown with target='_top'.
+    Placed directly in the Streamlit frame (not a sub-iframe) so HF sandbox doesn't block it."""
+    st.markdown(
         f"""
-        <style>
-          body {{ margin:0; padding:0; background:transparent; }}
-          a.gbtn {{
-            display:flex; align-items:center; justify-content:center;
+        <a href="{google_url}" target="_top" style="
+            display:flex;align-items:center;justify-content:center;gap:10px;
             font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-            font-weight:600; font-size:0.93rem; color:#3c4043;
-            background:#ffffff; border:1px solid #dadce0; border-radius:8px;
-            padding:11px 16px; box-shadow:0 1px 3px rgba(0,0,0,.10);
-            text-decoration:none; width:100%; box-sizing:border-box;
-            transition:box-shadow .15s;
-          }}
-          a.gbtn:hover {{ box-shadow:0 2px 6px rgba(0,0,0,.18); }}
-        </style>
-        <a class="gbtn" href="{google_url}" target="_top">
+            font-weight:600;font-size:0.93rem;color:#3c4043;
+            background:#ffffff;border:1px solid #dadce0;border-radius:8px;
+            padding:11px 16px;box-shadow:0 1px 3px rgba(0,0,0,.10);
+            text-decoration:none;width:100%;box-sizing:border-box;
+            margin-bottom:4px;
+        ">
           {_G_SVG}{label}
         </a>
         """,
-        height=52,
+        unsafe_allow_html=True,
     )
 
 
